@@ -54,10 +54,10 @@ class FocusedMenuDetails extends StatelessWidget {
     final leftOffset = (childOffset.dx + maxMenuWidth) < size.width
         ? childOffset.dx
         : (childOffset.dx - maxMenuWidth + childSize!.width);
-    final topOffset = (childOffset.dy + menuHeight + childSize!.height) <
-            size.height - bottomOffsetHeight!
-        ? childOffset.dy + childSize!.height + menuOffset!
-        : childOffset.dy - menuHeight - menuOffset!;
+    final topOffset =
+        (childOffset.dy + menuHeight + childSize!.height) < size.height - bottomOffsetHeight!
+            ? childOffset.dy + childSize!.height + menuOffset!
+            : childOffset.dy - menuHeight - menuOffset!;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
@@ -69,15 +69,22 @@ class FocusedMenuDetails extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(
-                      sigmaX: blurSize ?? 4, sigmaY: blurSize ?? 4),
+                  filter: ImageFilter.blur(sigmaX: blurSize ?? 4, sigmaY: blurSize ?? 4),
                   child: Container(
-                    color:
-                        (blurBackgroundColor ?? Colors.black).withOpacity(0.7),
+                    color: (blurBackgroundColor ?? Colors.black).withOpacity(0.7),
                   ),
                 )),
+            if (toolbarActions != null) ToolbarActions(toolbarActions: toolbarActions!),
             Positioned(
-              top: topOffset,
+                top: childOffset.dy,
+                left: childOffset.dx,
+                child: AbsorbPointer(
+                    absorbing: true,
+                    child: Container(
+                        width: childSize!.width, height: childSize!.height, child: child))),
+            Positioned(
+              top: topOffset < 0 ? null : topOffset,
+              bottom: topOffset < 0 ? 100 : null,
               left: leftOffset,
               child: TweenAnimationBuilder(
                 duration: Duration(milliseconds: 200),
@@ -95,13 +102,9 @@ class FocusedMenuDetails extends StatelessWidget {
                   decoration: menuBoxDecoration ??
                       BoxDecoration(
                           color: Colors.grey.shade200,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(5.0)),
+                          borderRadius: const BorderRadius.all(Radius.circular(5.0)),
                           boxShadow: [
-                            const BoxShadow(
-                                color: Colors.black38,
-                                blurRadius: 10,
-                                spreadRadius: 1)
+                            const BoxShadow(color: Colors.black38, blurRadius: 10, spreadRadius: 1)
                           ]),
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(5.0)),
@@ -124,16 +127,13 @@ class FocusedMenuDetails extends StatelessWidget {
                                 color: item.backgroundColor ?? Colors.white,
                                 height: itemExtent ?? 50.0,
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8.0, horizontal: 14),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0, horizontal: 14),
                                   child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                       item.title,
-                                      if (item.trailing != null) ...[
-                                        item.trailing!
-                                      ]
+                                      if (item.trailing != null) ...[item.trailing!]
                                     ],
                                   ),
                                 )));
@@ -158,17 +158,6 @@ class FocusedMenuDetails extends StatelessWidget {
                 ),
               ),
             ),
-            if (toolbarActions != null)
-              ToolbarActions(toolbarActions: toolbarActions!),
-            Positioned(
-                top: childOffset.dy,
-                left: childOffset.dx,
-                child: AbsorbPointer(
-                    absorbing: true,
-                    child: Container(
-                        width: childSize!.width,
-                        height: childSize!.height,
-                        child: child))),
           ],
         ),
       ),
